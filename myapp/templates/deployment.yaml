@@ -15,6 +15,9 @@ spec:
       labels:
         {{- include "labels.app" . | indent 3 }}
     spec:
+      {{ if .Values.rbac.enabled -}}
+      serviceAccount: {{ .Values.rbac.sa }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -40,6 +43,11 @@ spec:
               port: http
           resources:
 {{ toYaml .Values.resources | indent 12 }}
+      {{- if .Values.configmap.enabled }}
+          volumeMounts:
+           - name: config-volume
+             mountPath: /etc/config
+          {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -51,4 +59,10 @@ spec:
     {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- if .Values.configmap.enabled }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "myapp.fullname" . }}
     {{- end }}
