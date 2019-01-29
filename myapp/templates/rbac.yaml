@@ -1,0 +1,44 @@
+{{- if .Values.rbac.enabled -}}
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.rbac.sa }}
+  labels:
+    {{- include "labels.app" . }}
+
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.rbac.role.name }}
+  labels:
+    {{- include "labels.app" . }}
+rules:
+- apiGroups: {{- range .Values.rbac.role.apigroups }}
+    - {{ . | quote }}
+  {{- end }}
+  resources: {{- range .Values.rbac.role.resources }}
+    - {{ . | quote }}
+  {{- end }}
+  verbs: {{- range .Values.rbac.role.verbs }}
+    - {{ . | quote }}
+  {{- end }}
+
+--- 
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.rbac.rolebinding }}
+  labels:
+    {{- include "labels.app" .  }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.rbac.sa }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Values.rbac.role.name }}
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end }}

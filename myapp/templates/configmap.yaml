@@ -1,0 +1,15 @@
+{{- if .Values.configmap.enabled -}}
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "myapp.fullname" . }}
+  labels:
+    {{- include "labels.app" .  }}
+data:
+  mykey: "myvalue"
+  {{- range $key, $val := .Values.configmap.entries }}
+  {{ $key }}: {{ $val | quote }}
+  {{- end }}
+
+{{- end }}  
