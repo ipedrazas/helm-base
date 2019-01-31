@@ -27,4 +27,4 @@ helm template ./myapp --name=x01 -x templates/configmap.yaml --set configmap.ena
 
 The `Ingress` rule contains a flag to add the annotations that enable `CORS`.
 
-There is an external file `entries.app` where you define the labels you want to include in all resources. CORS annotation are also defined there.
+There is an external file `entries.app` where you define the labels you want to include in all resources. CORS annotation are also defined there. It's important to note that when we do  `{{- include "labels.app" . }}` we're not including a file, we're including a template. These templates are defined in the `entries.app` file.
