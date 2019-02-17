@@ -18,9 +18,14 @@ spec:
       {{ if .Values.rbac.enabled -}}
       serviceAccount: {{ .Values.rbac.sa }}
       {{- end }}
+      securityContext:
+        runAsUser: 1000
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          securityContext:
+            runAsUser: 2000
+            allowPrivilegeEscalation: false
           imagePullPolicy: {{ .Values.image.pullPolicy }}
         {{- if .Values.image.env.enabled }}
           env:
